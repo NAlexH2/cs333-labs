@@ -29,3 +29,7 @@ SYSCALL(getpid)
 SYSCALL(sbrk)
 SYSCALL(sleep)
 SYSCALL(uptime)
+
+#ifdef GETPPID
+SYSCALL(getppid)
+#endif //GETPPID

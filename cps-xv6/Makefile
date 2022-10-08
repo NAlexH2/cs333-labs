@@ -79,6 +79,7 @@ LD = $(TOOLPREFIX)ld
 OBJCOPY = $(TOOLPREFIX)objcopy
 OBJDUMP = $(TOOLPREFIX)objdump
 DEFINES = 
+DEFINES += -DGETPPID
 CFLAGS = $(DEFINES) -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer -Wno-stringop-overflow
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 ASFLAGS = $(DEFINES) -m32 -gdwarf-2 -Wa,-divide
@@ -185,6 +186,7 @@ UPROGS=\
 	_wc\
 	_zombie\
 	_sizeof\
+	_getppidtest\
 	$(NULL)
 
 fs.img: mkfs README $(UPROGS)
@@ -294,5 +296,8 @@ DIR = $(shell basename $(PWD))
 canvas:
 	make clean
 	cd .. ; tar --exclude-backups --exclude-vcs -c -a -f ./${LOGNAME}-$(DIR)-xv6.tar.gz $(DIR)
+
+newcall:
+	grep getppid *.[chS] Makefile | cat -n | grep -v grep
 
 .PHONY: dist-test dist
