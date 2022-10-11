@@ -3,6 +3,31 @@
 #include "user.h"
 #include "fs.h"
 
+
+#ifdef BETTER_LS
+char filetype(int sttype)
+{
+    char ftype = '-';
+    switch(sttype) {
+      case T_DIR:
+        ftype = 'd';
+        break;
+      case T_FILE:
+        ftype = 'f';
+        break;
+      case T_DEV:
+        ftype = 'D';
+        break;
+      default:
+        ftype = '?';
+        break;
+    }
+    return(ftype);
+}
+
+
+#endif //BETTER_LS
+
 char*
 fmtname(char *path)
 {
@@ -43,7 +68,12 @@ ls(char *path)
 
   switch(st.type){
   case T_FILE:
+  #ifdef BETTER_LS
+    printf(1, "%s\t%c\t%d\t%d\t%d\n", fmtname(path), filetype(st.type)
+            , st.nlink, st.ino, st.size);
+  #else //BETTER_LS
     printf(1, "%s %d %d %d\n", fmtname(path), st.type, st.ino, st.size);
+  #endif //BETTER_LS
     break;
 
   case T_DIR:
@@ -63,7 +93,12 @@ ls(char *path)
         printf(1, "ls: cannot stat %s\n", buf);
         continue;
       }
+#ifdef BETTER_LS
+    printf(1, "%s\t%c\t%d\t%d\t%d\n", fmtname(buf), filetype(st.type)
+            , st.nlink, st.ino, st.size);
+#else // BETTER_LS
       printf(1, "%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
+#endif // BETTER_LS
     }
     break;
   }
@@ -75,6 +110,9 @@ main(int argc, char *argv[])
 {
   int i;
 
+#ifdef BETTER_LS
+  printf(1, "%s\t\t%s\t%s\t%s\t%s\n", "name", "type", "# lks", "ino #", "size");
+#endif // BETTER_ls
   if(argc < 2){
     ls(".");
     exit();
