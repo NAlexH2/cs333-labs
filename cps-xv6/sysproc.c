@@ -96,3 +96,10 @@ int sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+#ifdef CPS
+int sys_cps(void)
+{
+  return proc_cps();
+}
+#endif //CPS

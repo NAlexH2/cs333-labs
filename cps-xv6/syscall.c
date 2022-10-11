@@ -104,6 +104,10 @@ extern int sys_uptime(void);
 extern int sys_getppid(void);
 #endif // GETPPID
 
+#ifdef CPS
+extern int sys_cps(void);
+#endif // CPS
+
 static int (*syscalls[])(void) = {
     [SYS_fork] sys_fork,
     [SYS_exit] sys_exit,
@@ -130,6 +134,10 @@ static int (*syscalls[])(void) = {
 #ifdef GETPPID
     [SYS_getppid] sys_getppid,
 #endif // GETPPID
+
+#ifdef CPS
+    [SYS_cps] sys_cps,
+#endif // CPS
 
 };
 

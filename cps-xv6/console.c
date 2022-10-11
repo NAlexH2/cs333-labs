@@ -75,6 +75,7 @@ cprintf(char *fmt, ...)
     if(c == 0)
       break;
     switch(c){
+    case 'u':
     case 'd':
       printint(*argp++, 10, 1);
       break;

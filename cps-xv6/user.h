@@ -111,7 +111,13 @@ void free(void *);
 int atoi(const char *);
 
 #ifdef GETPPID
-int getppid(void);
+    int getppid(void);
 #endif // GETPPID
+
+
+#ifdef CPS
+int cps(void);
+#endif //cps
+
 
 #endif //__USER_H
