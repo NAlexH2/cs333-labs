@@ -11,4 +11,4 @@ struct rtcdate {
   uint year;
 };
 
-#endif __DATE_H // __DATE_H
+#endif // __DATE_H

@@ -1,4 +1,5 @@
 #pragma once
+#include "types.h"
 
 #ifndef __USER_H
 # define __USER_H
@@ -75,7 +76,8 @@ struct stat;
 struct rtcdate;
 
 #ifdef PROC_TIMES
-# error this would be a good place to #include rand.h
+// # error this would be a good place to #include rand.h
+#include "rand.h"
 #endif // PROC_TIMES
 
 // system calls

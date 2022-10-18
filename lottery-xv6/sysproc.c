@@ -7,6 +7,10 @@
 #include "mmu.h"
 #include "proc.h"
 
+#ifdef PROC_TIMES
+  extern int suptime(void);
+#endif // PROC_TIMES
+
 int
 sys_fork(void)
 {
@@ -91,10 +95,19 @@ sys_sleep(void)
 }
 
 #ifdef PROC_TIMES
-# error I implemented a function here called suptime (because it
-# error makes me think of supper time.
-# error it does all the things of sys_uptime() below. I then have
-# error sys_uptime() just call suptime().
+// # error I implemented a function here called suptime (because it
+// # error makes me think of supper time.
+// # error it does all the things of sys_uptime() below. I then have
+// # error sys_uptime() just call suptime().
+int suptime(void)
+{
+  uint xticks;
+  acquire(&tickslock);
+  xticks = ticks;
+  release(&tickslock);
+  return xticks;
+}
+
 #endif // PROC_TIMES
 
 // return how many clock tick interrupts have occurred
@@ -102,7 +115,7 @@ sys_sleep(void)
 int
 sys_uptime(void)
 {
-  return uptime();
+  return suptime();
 }
 
 #ifdef CPS
