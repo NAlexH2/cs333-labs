@@ -22,6 +22,9 @@ int nextpid = 1;
 extern void forkret(void);
 extern void trapret(void);
 
+//uptime to use for allocproc
+extern int uptime(void);
+
 static void wakeup1(void *chan);
 
 static char *states[] = {
@@ -126,10 +129,14 @@ found:
   p->context->eip = (uint)forkret;
 
 #ifdef PROC_TIMES
-# error this is a good place to initialize some data members
+// # error this is a good place to initialize some data members
+  cmostime(&p->begin_date);
+  p->ticks_total = 0;
+  p->ticks_begin = 0;
+  p->sched_times = 0;
 #endif // PROC_TIMES
 #ifdef LOTTERY
-# error this is a good place to set the default nice value
+// # error this is a good place to set the default nice value
 #endif // LOTTERY
   
   return p;
@@ -378,14 +385,17 @@ scheduler(void)
       p->state = RUNNING;
       
 #ifdef PROC_TIMES
-# error this is just before a process is scheduled
+// # error this is just before a process is scheduled
+  ++p->sched_times;
+  p->ticks_begin = uptime();
 #endif // PROC_TIMES
       
       swtch(&(c->scheduler), p->context);
       switchkvm();
 
 #ifdef PROC_TIMES
-# error this is just after a process is scheduled
+// # error this is just after a process is scheduled
+  p->ticks_total = uptime() - p->ticks_begin;
 #endif // PROC_TIMES
       
       // Process is done running for now.
@@ -395,6 +405,17 @@ scheduler(void)
     release(&ptable.lock);
 
   }
+}
+
+// return how many clock tick interrupts have occurred
+// since start.
+int uptime(void)
+{
+  uint xticks;
+  acquire(&tickslock);
+  xticks = ticks;
+  release(&tickslock);
+  return xticks;
 }
 
 #ifdef LOTTERY
@@ -586,7 +607,7 @@ proc_cps(void)
     acquire(&ptable.lock);
 
     cprintf(
-        "pid\tppid\tname\tstate\tsize"
+        "pid\tppid\tname\tstate\tsize\tstart time"
         );
 #ifdef PROC_TIMES
 # error this is an excellent place to add some new header into to the o/p of cps
@@ -601,12 +622,19 @@ proc_cps(void)
             else {
                 state = "uknown";
             }
-            cprintf("%d\t%d\t%s\t%s\t%u"
+            cprintf("%d\t%d\t%s\t%s\t%u\t%u-%u-%u %u:%u:%u"
                     , ptable.proc[i].pid
                     , ptable.proc[i].parent ? ptable.proc[i].parent->pid : 1
                     , ptable.proc[i].name
                     , state
                     , ptable.proc[i].sz
+                    , ptable.proc[i].begin_date.year
+                    , ptable.proc[i].month < 10 ? 
+                    '0' ptable.proc[i].day : ptable.proc[i].day
+                    , ptable.proc[i].day
+                    , ptable.proc[i].hour
+                    , ptable.proc[i].minute
+                    , ptable.proc[i].second
                 );
 #ifdef PROC_TIMES
 # error this is an excellent place to add some new data to the o/p of cps
