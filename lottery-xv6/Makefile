@@ -193,6 +193,8 @@ UPROGS=\
 	_sizeof\
 	_getppidtest\
 	_ps\
+	_mult\
+	_mfork\
 	$(NULL)
 #LOTTERY - you'll add some new programs into here
 #  mult, mfork, nice, renice, random
