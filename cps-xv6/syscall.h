@@ -38,4 +38,8 @@
 #define SYS_halt 24
 #endif // HALT
 
+#ifdef KDEBUG
+#define SYS_kdebug 25
+#endif // KDEBUG
+
 #endif //__SYSCALL_H

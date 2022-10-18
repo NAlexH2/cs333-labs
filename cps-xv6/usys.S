@@ -41,3 +41,8 @@ SYSCALL(cps)
 #ifdef HALT
 SYSCALL(halt)
 #endif //HALT
+
+
+#ifdef KDEBUG
+SYSCALL(kdebug)
+#endif // KDEBUG

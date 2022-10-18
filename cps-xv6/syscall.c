@@ -112,6 +112,10 @@ extern int sys_cps(void);
 extern int sys_halt(void);
 #endif //HALT
 
+#ifdef KDEBUG
+extern int sys_kdebug(void);
+#endif // KDEBUG
+
 static int (*syscalls[])(void) = {
     [SYS_fork] sys_fork,
     [SYS_exit] sys_exit,
@@ -147,6 +151,9 @@ static int (*syscalls[])(void) = {
     [SYS_halt] sys_halt,
 #endif // HALT
 
+#ifdef KDEBUG
+    [SYS_kdebug] sys_kdebug,
+#endif // KDEBUG
 };
 
 void syscall(void)

@@ -15,6 +15,10 @@ struct
 
 static struct proc *initproc;
 
+#ifdef KDEBUG
+int proc_kdebug_level = 0;
+#endif // KDEBUG
+
 int nextpid = 1;
 extern void forkret(void);
 extern void trapret(void);
@@ -222,6 +226,13 @@ int fork(void)
   np->cwd = idup(curproc->cwd);
 
   safestrcpy(np->name, curproc->name, sizeof(curproc->name));
+
+#ifdef KDEBUG
+  if (proc_kdebug_level > 0) {
+    cprintf("kdebug: %s %d: process %s forked\n"
+    , __FILE__, __LINE__, curproc->name);
+  }
+#endif // KDEBUG
 
   pid = np->pid;
 
@@ -576,6 +587,28 @@ int proc_cps(void)
   }
 
   release(&ptable.lock);
+
   return 0;
 }
 #endif // CPS
+
+
+#ifdef KDEBUG
+int proc_kdebug(int value)
+{
+  int ret = 0;
+
+  cprintf("%d %s\n", __LINE__, __FILE__);
+  if (value < 0) {
+    ret = 1;
+  }
+  else {
+    proc_kdebug_level = value;
+    cprintf("kernel diag messages: %s   %d\n"
+    , proc_kdebug_level ? "enabled" : "disabled"
+    , proc_kdebug_level);
+  }
+
+  return ret;
+}
+#endif // KDEBUG

@@ -123,4 +123,8 @@ int cps(void);
 int halt(void);
 #endif // HALT
 
+#ifdef KDEBUG
+int kdebug(int);
+#endif // KDEBUG
+
 #endif //__USER_H

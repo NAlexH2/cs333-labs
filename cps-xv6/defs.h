@@ -129,6 +129,10 @@ void yield(void);
 int proc_cps(void);
 #endif // CPS
 
+#ifdef KDEBUG
+int proc_kdebug(int);
+#endif // KDEBUG
+
 // swtch.S
 void swtch(struct context **, struct context *);
 

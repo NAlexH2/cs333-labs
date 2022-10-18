@@ -83,6 +83,7 @@ DEFINES += -DGETPPID
 DEFINES += -DCPS
 DEFINES += -DBETTER_LS
 DEFINES += -DHALT
+DEFINES += -DKDEBUG
 CFLAGS = $(DEFINES) -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer -Wno-stringop-overflow
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 ASFLAGS = $(DEFINES) -m32 -gdwarf-2 -Wa,-divide
@@ -192,6 +193,7 @@ UPROGS=\
 	_getppidtest\
 	_ps\
 	_halt\
+	_kdebug\
 	$(NULL)
 
 fs.img: mkfs README $(UPROGS)

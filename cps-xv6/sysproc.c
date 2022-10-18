@@ -113,3 +113,17 @@ int sys_cps(void)
 }
 #endif //CPS
 
+#ifdef KDEBUG
+int sys_kdebug(void)
+{
+  int n = 0;
+  
+  cprintf("%d %s\n", __LINE__, __FILE__);
+  if (argint(0, &n) < 0) {
+    return -1;
+  }
+
+  return proc_kdebug(n);
+}
+#endif // KDEBUG
+
