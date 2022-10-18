@@ -7,6 +7,15 @@
 #include "mmu.h"
 #include "proc.h"
 
+#ifdef HALT
+int sys_halt(void)
+{
+  outw(0x604, 0x2000);
+  // https://wiki.osdev.org/Shutdown
+  return 0;
+}
+#endif
+
 int sys_fork(void)
 {
   return fork();
@@ -103,3 +112,4 @@ int sys_cps(void)
   return proc_cps();
 }
 #endif //CPS
+

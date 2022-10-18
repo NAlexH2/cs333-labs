@@ -37,3 +37,7 @@ SYSCALL(getppid)
 #ifdef CPS
 SYSCALL(cps)
 #endif //CPS
+
+#ifdef HALT
+SYSCALL(halt)
+#endif //HALT

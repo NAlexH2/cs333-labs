@@ -25,7 +25,7 @@
 #define SYS_mkdir 20
 #define SYS_close 21
 
-// Inclass 03
+// From InClass assignments
 #ifdef GETPPID
 #define SYS_getppid 22
 #endif // GETPPID
@@ -33,5 +33,9 @@
 #ifdef CPS
 #define SYS_cps 23
 #endif // CPS
+
+#ifdef HALT
+#define SYS_halt 24
+#endif // HALT
 
 #endif //__SYSCALL_H

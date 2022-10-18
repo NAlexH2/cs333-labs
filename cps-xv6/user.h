@@ -119,5 +119,8 @@ int atoi(const char *);
 int cps(void);
 #endif //cps
 
+#ifdef HALT
+int halt(void);
+#endif // HALT
 
 #endif //__USER_H

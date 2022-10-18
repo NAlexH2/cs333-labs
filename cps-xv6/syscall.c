@@ -108,6 +108,10 @@ extern int sys_getppid(void);
 extern int sys_cps(void);
 #endif // CPS
 
+#ifdef HALT
+extern int sys_halt(void);
+#endif //HALT
+
 static int (*syscalls[])(void) = {
     [SYS_fork] sys_fork,
     [SYS_exit] sys_exit,
@@ -138,6 +142,10 @@ static int (*syscalls[])(void) = {
 #ifdef CPS
     [SYS_cps] sys_cps,
 #endif // CPS
+
+#ifdef HALT
+    [SYS_halt] sys_halt,
+#endif // HALT
 
 };
 
