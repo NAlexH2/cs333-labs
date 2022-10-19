@@ -357,11 +357,34 @@ scheduler(void)
 {
 
 #ifdef LOTTERY
-# error When I made the changes to the scheduler function for the LOTTERY
-# error scheduler, they were extensive. So, instead of having a plethora
-# error nested, twisted, overlapping #ifdef's for LOTTERY, I just #ifdef'ed
-# error the entire existing scheduler code and have a block of new code for
-# error LOTTERY code.
+// # error When I made the changes to the scheduler function for the LOTTERY
+// # error scheduler, they were extensive. So, instead of having a plethora
+// # error nested, twisted, overlapping #ifdef's for LOTTERY, I just #ifdef'ed
+// # error the entire existing scheduler code and have a block of new code for
+// # error LOTTERY code.
+
+  int nice_sums = sum_nice_values();
+  struct proc *p;
+  struct cpu *c = mycpu();
+  c->proc = 0;
+  srand(nice_sums);
+  int nice_breaker = (rand() % nice_sums) + 1;
+  acquire(&ptable.lock);
+  int breaker = 0;
+  int winner = 0;
+  //TODO
+  for(p = ptable.proc; breaker < nice_accum; ++p)
+  {
+    if(breaker + p->nice < nice_accum)
+      breaker += p->nice;
+    else
+    {
+      winner = p->nice;
+      breaker += p->nice;
+    }
+  }
+
+
 #endif // LOTTERY
     
   struct proc *p;
@@ -408,8 +431,25 @@ scheduler(void)
   }
 }
 
-// return how many clock tick interrupts have occurred
-// since start.
+#ifdef LOTTERY
+int sum_nice_values(void)
+{
+  int nice_sums = 0;
+  struct proc *p;
+  struct cpu *c = mycpu();
+  c->proc = 0;
+  acquire(&ptable.lock);
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+  {
+    if (p->state != RUNNABLE)
+      continue;
+    nice_sums += p->nice;
+  }
+
+  release(&ptable.lock);
+  return nice_sums;
+}
+#endif // LOTTERY
 
 #ifdef LOTTERY
 # error I put a fuction here to sum up the nice values from
