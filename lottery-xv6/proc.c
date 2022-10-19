@@ -366,7 +366,6 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  srand(nice_sums);
   int nice_sums = sum_nice_values();
   int threshold = (rand() % nice_sums) + 1;
   int nice_breaker;
@@ -377,45 +376,53 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
     acquire(&ptable.lock);
-    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    if (nice_sums > 0)
     {
-      if (p->state != RUNNABLE)
-        continue;
-      // if a winner quite hasn't been found... increment our nice_breaker
-      else if (nice_breaker + p->nice < threshold)
+      for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
       {
-        nice_breaker += p->nice;
-      }
-      // if the current processes nice value + nice_breaker is greater than
-      // the threshold determined by sudo random num genereator, the process
-      // runs.
-      else
-      {
-        c->proc = p;
-        switchuvm(p);
-        p->state = RUNNING;
+        if (p->state != RUNNABLE)
+          continue;
+        // if a winner quite hasn't been found... increment our nice_breaker
+        else if (nice_breaker + p->nice < threshold)
+        {
+          nice_breaker += p->nice;
+        }
+        // if the current processes nice value + nice_breaker is greater than
+        // the threshold determined by sudo random num genereator, the process
+        // runs.
+        else
+        {
+          c->proc = p;
+          switchuvm(p);
+          p->state = RUNNING;
 
 #ifdef PROC_TIMES
-        // # error this is just before a process is scheduled
-        ++p->sched_times;
-        p->ticks_begin = suptime();
+          // # error this is just before a process is scheduled
+          ++p->sched_times;
+          p->ticks_begin = suptime();
 #endif // PROC_TIMES
 
-        swtch(&(c->scheduler), p->context);
-        switchkvm();
+          swtch(&(c->scheduler), p->context);
+          switchkvm();
 
 #ifdef PROC_TIMES
-        // # error this is just after a process is scheduled
-        p->ticks_total += suptime() - p->ticks_begin;
+          // # error this is just after a process is scheduled
+          p->ticks_total += suptime() - p->ticks_begin;
 #endif // PROC_TIMES
 
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
-        release(&ptable.lock);
+          // Process is done running for now.
+          // It should have changed its p->state before coming back.
+          c->proc = 0;
+          release(&ptable.lock);
+        }
       }
     }
+    else
+    {
+      release(&ptable.lock);
+    }
   }
+}
 #endif // LOTTERY
     
   struct proc *p;
@@ -692,14 +699,17 @@ proc_cps(void)
                   );
 #ifdef PROC_TIMES
 // # error this is an excellent place to add some new data to the o/p of cps
-            cprintf("%u-%u-%u %u:%u:%u\t%u\t%u"
+            cprintf("%u-%s%u-%s%u %s%u:%s%u:%s%u\t%u\t%u"
                     , ptable.proc[i].begin_date.year
-                    , ptable.proc[i].begin_date.month < 10
-                    ? 0+ptable.proc[i].begin_date.month
-                    : ptable.proc[i].begin_date.month
+                    , ptable.proc[i].begin_date.month < 10 ? "0" : ""
+                    , ptable.proc[i].begin_date.month
+                    , ptable.proc[i].begin_date.day < 10 ? "0" : ""
                     , ptable.proc[i].begin_date.day
+                    , ptable.proc[i].begin_date.hour < 10 ? "0" : ""
                     , ptable.proc[i].begin_date.hour
+                    , ptable.proc[i].begin_date.minute < 10 ? "0" : ""
                     , ptable.proc[i].begin_date.minute
+                    , ptable.proc[i].begin_date.second < 10 ? "0" : ""
                     , ptable.proc[i].begin_date.second
                     , ptable.proc[i].ticks_total
                     , ptable.proc[i].sched_times
