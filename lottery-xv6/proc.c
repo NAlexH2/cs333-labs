@@ -363,28 +363,59 @@ scheduler(void)
 // # error the entire existing scheduler code and have a block of new code for
 // # error LOTTERY code.
 
-  int nice_sums = sum_nice_values();
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
   srand(nice_sums);
-  int nice_breaker = (rand() % nice_sums) + 1;
-  acquire(&ptable.lock);
-  int breaker = 0;
-  int winner = 0;
-  //TODO
-  for(p = ptable.proc; breaker < nice_accum; ++p)
+  int nice_sums = sum_nice_values();
+  int threshold = (rand() % nice_sums) + 1;
+  int nice_breaker;
+  for (;;)
   {
-    if(breaker + p->nice < nice_accum)
-      breaker += p->nice;
-    else
+    nice_breaker = (rand() % nice_sums) + 1;
+    nice_breaker = 0;
+    // Enable interrupts on this processor.
+    sti();
+    acquire(&ptable.lock);
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     {
-      winner = p->nice;
-      breaker += p->nice;
+      if (p->state != RUNNABLE)
+        continue;
+      // if a winner quite hasn't been found... increment our nice_breaker
+      else if (nice_breaker + p->nice < threshold)
+      {
+        nice_breaker += p->nice;
+      }
+      // if the current processes nice value + nice_breaker is greater than
+      // the threshold determined by sudo random num genereator, the process
+      // runs.
+      else
+      {
+        c->proc = p;
+        switchuvm(p);
+        p->state = RUNNING;
+
+#ifdef PROC_TIMES
+        // # error this is just before a process is scheduled
+        ++p->sched_times;
+        p->ticks_begin = suptime();
+#endif // PROC_TIMES
+
+        swtch(&(c->scheduler), p->context);
+        switchkvm();
+
+#ifdef PROC_TIMES
+        // # error this is just after a process is scheduled
+        p->ticks_total += suptime() - p->ticks_begin;
+#endif // PROC_TIMES
+
+        // Process is done running for now.
+        // It should have changed its p->state before coming back.
+        c->proc = 0;
+        release(&ptable.lock);
+      }
     }
   }
-
-
 #endif // LOTTERY
     
   struct proc *p;
@@ -427,11 +458,12 @@ scheduler(void)
       c->proc = 0;
     }
     release(&ptable.lock);
-
   }
 }
 
 #ifdef LOTTERY
+// # error I put a fuction here to sum up the nice values from
+// # error processes here.
 int sum_nice_values(void)
 {
   int nice_sums = 0;
@@ -449,11 +481,6 @@ int sum_nice_values(void)
   release(&ptable.lock);
   return nice_sums;
 }
-#endif // LOTTERY
-
-#ifdef LOTTERY
-# error I put a fuction here to sum up the nice values from
-# error processes here.
 #endif // LOTTERY
 
 // Enter scheduler.  Must hold only ptable.lock
