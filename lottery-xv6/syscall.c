@@ -110,7 +110,8 @@ extern int sys_getppid(void);
 extern int sys_cps(void);
 #endif // CPS
 #ifdef LOTTERY
-# error extern the kernel calls in here
+// # error extern the kernel calls in here
+extern int sys_renice(void);
 #endif // LOTTERY
 
 static int (*syscalls[])(void) = {
@@ -142,7 +143,8 @@ static int (*syscalls[])(void) = {
 [SYS_cps]     sys_cps,
 #endif // CPS
 #ifdef LOTTERY
-# error new array entries for the system calls
+// # error new array entries for the system calls
+[SYS_renice]  sys_renice,
 #endif // LOTTERY
 };
 

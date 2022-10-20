@@ -128,5 +128,9 @@ sys_cps(void)
 #endif // CPS
 
 #ifdef LOTTERY
-# error this is where the sys_renice function should live
+// # error this is where the sys_renice function should live
+int sys_renice(void)
+{
+  //TODO WHAT!?
+}
 #endif // LOTTERY

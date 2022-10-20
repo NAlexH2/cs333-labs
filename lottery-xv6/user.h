@@ -126,7 +126,8 @@ int cps(void);
 #endif // CPS
 
 # ifdef LOTTERY
-#  error the user side function for renice will be here
+// #  error the user side function for renice will be here
+void renice(int, int);
 # endif // LOTTERY
 
 #endif // __USER_H

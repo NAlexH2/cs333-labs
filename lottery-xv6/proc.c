@@ -245,8 +245,9 @@ fork(void)
   np->state = RUNNABLE;
   
 #ifdef LOTTERY
-# error since a child inherits the nice value from the parent, take
-# error of that here
+// # error since a child inherits the nice value from the parent, take
+// # error of that here
+np->nice = curproc->nice;
 #endif // LOTTERY
   
   release(&ptable.lock);
@@ -355,6 +356,9 @@ wait(void)
 void
 scheduler(void)
 {
+  struct proc *p;
+  struct cpu *c = mycpu();
+  c->proc = 0;
 
 #ifdef LOTTERY
 // # error When I made the changes to the scheduler function for the LOTTERY
@@ -363,16 +367,11 @@ scheduler(void)
 // # error the entire existing scheduler code and have a block of new code for
 // # error LOTTERY code.
 
-  struct proc *p;
-  struct cpu *c = mycpu();
-  c->proc = 0;
-  int nice_sums = sum_nice_values();
-  int threshold = (rand() % nice_sums) + 1;
-  int nice_breaker;
   for (;;)
   {
-    nice_breaker = (rand() % nice_sums) + 1;
-    nice_breaker = 0;
+    int nice_sums = sum_nice_values();
+    int threshold = (rand() % nice_sums) + 1;
+    int nice_breaker = 0;
     // Enable interrupts on this processor.
     sti();
     acquire(&ptable.lock);
@@ -422,12 +421,7 @@ scheduler(void)
       release(&ptable.lock);
     }
   }
-}
 #endif // LOTTERY
-    
-  struct proc *p;
-  struct cpu *c = mycpu();
-  c->proc = 0;
   
   for(;;){
     // Enable interrupts on this processor.
@@ -661,7 +655,21 @@ procdump(void)
 }
 
 #ifdef LOTTERY
-# error I put the implementation of renice in here
+// # error I put the implementation of renice in here
+void proc_renice(int pid, int nice)
+{
+  acquire(&ptable.lock);
+
+  for(int i = 0; i < NPROC; ++i){
+    if(ptable.proc[i].pid == pid && ptable.proc[i].state == RUNNABLE){
+      ptable.proc[i].nice = nice;
+      return;
+    }
+  }
+  cprintf("\nFailure: PID %d is not currently running.", pid);
+  release(&ptable.lock);
+  return;
+}
 #endif // LOTTERY
 
 #ifdef CPS

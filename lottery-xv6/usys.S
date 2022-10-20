@@ -35,7 +35,8 @@ SYSCALL(getppid)
 #ifdef CPS
 SYSCALL(cps)
 #endif // CPS
+
 #ifdef LOTTERY
-# error some new system calls go in here
+SYSCALL(renice)
 #endif // LOTTERY
     
