@@ -131,6 +131,12 @@ sys_cps(void)
 // # error this is where the sys_renice function should live
 int sys_renice(void)
 {
-  //TODO WHAT!?
+  int nice = 0;
+  int pid = 0;
+  nice = argint(0, &nice);
+  pid = argint(1, &pid);
+
+  return proc_renice(nice, pid);
+
 }
 #endif // LOTTERY

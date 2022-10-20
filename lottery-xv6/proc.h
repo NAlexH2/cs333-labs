@@ -94,7 +94,7 @@ struct proc {
 //   expandable heap
 
 #ifdef PROC_TIMES
-#endif // __PROC_H
 // # error close the multi-include protection here
+  #endif // __PROC_H
 #endif // PROC_TIMES
 

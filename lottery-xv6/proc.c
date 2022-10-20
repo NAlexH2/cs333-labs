@@ -138,6 +138,7 @@ found:
 #endif // PROC_TIMES
 #ifdef LOTTERY
 // # error this is a good place to set the default nice value
+  p->nice = MIN_NICE_VALUE;
 #endif // LOTTERY
   
   return p;
@@ -247,7 +248,7 @@ fork(void)
 #ifdef LOTTERY
 // # error since a child inherits the nice value from the parent, take
 // # error of that here
-np->nice = curproc->nice;
+  np->nice = curproc->nice;
 #endif // LOTTERY
   
   release(&ptable.lock);
@@ -369,12 +370,13 @@ scheduler(void)
 
   for (;;)
   {
-    int nice_sums = sum_nice_values();
-    int threshold = (rand() % nice_sums) + 1;
-    int nice_breaker = 0;
     // Enable interrupts on this processor.
     sti();
     acquire(&ptable.lock);
+    int nice_sums = sum_nice_values();
+    int threshold = (rand() % nice_sums) + 1;
+    int nice_breaker = 0;
+
     if (nice_sums > 0)
     {
       for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
@@ -382,38 +384,37 @@ scheduler(void)
         if (p->state != RUNNABLE)
           continue;
         // if a winner quite hasn't been found... increment our nice_breaker
-        else if (nice_breaker + p->nice < threshold)
+        nice_breaker += p->nice;
+        if (nice_breaker < threshold)
         {
-          nice_breaker += p->nice;
+          continue;
         }
         // if the current processes nice value + nice_breaker is greater than
         // the threshold determined by sudo random num genereator, the process
         // runs.
-        else
-        {
-          c->proc = p;
-          switchuvm(p);
-          p->state = RUNNING;
+        c->proc = p;
+        switchuvm(p);
+        p->state = RUNNING;
 
 #ifdef PROC_TIMES
-          // # error this is just before a process is scheduled
-          ++p->sched_times;
-          p->ticks_begin = suptime();
+        // # error this is just before a process is scheduled
+        ++p->sched_times;
+        p->ticks_begin = suptime();
 #endif // PROC_TIMES
 
-          swtch(&(c->scheduler), p->context);
-          switchkvm();
+        swtch(&(c->scheduler), p->context);
+        switchkvm();
 
 #ifdef PROC_TIMES
-          // # error this is just after a process is scheduled
-          p->ticks_total += suptime() - p->ticks_begin;
+        // # error this is just after a process is scheduled
+        p->ticks_total += suptime() - p->ticks_begin;
 #endif // PROC_TIMES
 
-          // Process is done running for now.
-          // It should have changed its p->state before coming back.
-          c->proc = 0;
-          release(&ptable.lock);
-        }
+        // Process is done running for now.
+        // It should have changed its p->state before coming back.
+        c->proc = 0;
+        release(&ptable.lock);
+        break;
       }
     }
     else
@@ -421,7 +422,7 @@ scheduler(void)
       release(&ptable.lock);
     }
   }
-#endif // LOTTERY
+#else
   
   for(;;){
     // Enable interrupts on this processor.
@@ -460,6 +461,7 @@ scheduler(void)
     }
     release(&ptable.lock);
   }
+#endif // LOTTERY
 }
 
 #ifdef LOTTERY
@@ -471,7 +473,6 @@ int sum_nice_values(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  acquire(&ptable.lock);
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
   {
     if (p->state != RUNNABLE)
@@ -479,7 +480,6 @@ int sum_nice_values(void)
     nice_sums += p->nice;
   }
 
-  release(&ptable.lock);
   return nice_sums;
 }
 #endif // LOTTERY
@@ -656,19 +656,22 @@ procdump(void)
 
 #ifdef LOTTERY
 // # error I put the implementation of renice in here
-void proc_renice(int pid, int nice)
+int proc_renice(int pid, int nice)
 {
+  if(nice < MIN_NICE_VALUE || nice > MAX_NICE_VALUE){
+    return 1;
+  }
   acquire(&ptable.lock);
 
   for(int i = 0; i < NPROC; ++i){
     if(ptable.proc[i].pid == pid && ptable.proc[i].state == RUNNABLE){
       ptable.proc[i].nice = nice;
-      return;
+      return 0;
     }
   }
   cprintf("\nFailure: PID %d is not currently running.", pid);
   release(&ptable.lock);
-  return;
+  return 2;
 }
 #endif // LOTTERY
 

@@ -131,6 +131,7 @@ int             proc_cps(void);
 #ifdef LOTTERY
 // # error you will need to have a new function in here for renice
 int             sum_nice_values(void);
+int             proc_renice(int, int);
 #endif // LOTTERY
 
 // swtch.S

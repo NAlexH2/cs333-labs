@@ -37,6 +37,7 @@ SYSCALL(cps)
 #endif // CPS
 
 #ifdef LOTTERY
+# renice here for syscall
 SYSCALL(renice)
 #endif // LOTTERY
     
