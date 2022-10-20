@@ -1,5 +1,6 @@
 #include "user.h"
 #include "types.h"
+#include "proc.h"
 
 int main (int argc, char * argv[])
 {
@@ -9,9 +10,10 @@ int main (int argc, char * argv[])
         "\nExpected a pid and new nice value to assign.\n");
         exit();
     }
-    if(argv[1] == 0)
+    if(atoi(atoi(argv[1]) < MIN_NICE_VALUE || argv[1]) > MAX_NICE_VALUE)
     {
-        printf(1, "\nERROR: renice value cannot be 0\n");
+        printf(1, "\nERROR: renice value must be between %d and %d\n", 
+        MIN_NICE_VALUE, MAX_NICE_VALUE);
         exit();
     }
 
