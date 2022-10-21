@@ -2,6 +2,7 @@
 #ifndef __RAND_H
  #define __RAND_H
 
+#define RAND_MAX (1 << 31)
 
 
 unsigned int rand(void);
