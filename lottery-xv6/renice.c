@@ -4,9 +4,9 @@
 int main (int argc, char * argv[])
 {
     #ifdef LOTTERY
-    if (argc <= 3) {
+    if (argc < 3) {
         printf(1, "\nERROR: Too few arguments to continue."
-        "\nExpected a pid and new nice value to assign.\n");
+        "\nExpected a new nice value and PID(s) to assign the new nice value to.\n");
         exit();
     }
     int nice = atoi(argv[1]);

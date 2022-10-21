@@ -138,7 +138,7 @@ found:
 #endif // PROC_TIMES
 #ifdef LOTTERY
 // # error this is a good place to set the default nice value
-  p->nice = MIN_NICE_VALUE;
+  p->nice = DEFAULT_NICE_VALUE;
 #endif // LOTTERY
   
   return p;
@@ -656,7 +656,7 @@ procdump(void)
 
 #ifdef LOTTERY
 // # error I put the implementation of renice in here
-int proc_renice(int pid, int nice)
+int proc_renice(int nice, int pid)
 {
   if(nice < MIN_NICE_VALUE || nice > MAX_NICE_VALUE){
     return 1;
@@ -664,12 +664,14 @@ int proc_renice(int pid, int nice)
   acquire(&ptable.lock);
 
   for(int i = 0; i < NPROC; ++i){
-    if(ptable.proc[i].pid == pid && ptable.proc[i].state == RUNNABLE){
+    if(ptable.proc[i].pid == pid 
+    && (ptable.proc[i].state == RUNNABLE || ptable.proc[i].state == RUNNING)){
       ptable.proc[i].nice = nice;
+      release(&ptable.lock);
       return 0;
     }
   }
-  cprintf("\nFailure: PID %d is not currently running.", pid);
+  cprintf("\nFailure: PID %d is not currently running.\n", pid);
   release(&ptable.lock);
   return 2;
 }
@@ -689,7 +691,7 @@ proc_cps(void)
         );
 #ifdef PROC_TIMES
 // # error this is an excellent place to add some new header into to the o/p of cps
-    cprintf("start time\t\tticks\tsched");
+    cprintf("start time\t\tticks\tsched\tnice");
 #endif // PROC_TIMES
     cprintf("\n");
     for (i = 0; i < NPROC; i++) {
@@ -710,7 +712,7 @@ proc_cps(void)
                   );
 #ifdef PROC_TIMES
 // # error this is an excellent place to add some new data to the o/p of cps
-            cprintf("%u-%s%u-%s%u %s%u:%s%u:%s%u\t%u\t%u"
+            cprintf("%u-%s%u-%s%u %s%u:%s%u:%s%u\t%u\t%u\t"
                     , ptable.proc[i].begin_date.year
                     , ptable.proc[i].begin_date.month < 10 ? "0" : ""
                     , ptable.proc[i].begin_date.month
@@ -726,6 +728,9 @@ proc_cps(void)
                     , ptable.proc[i].sched_times
                   );
 #endif // PROC_TIMES
+#ifdef LOTTERY
+            cprintf("%d", ptable.proc[i].nice);
+#endif // LOTTERY
             cprintf("\n");
         }
         else {

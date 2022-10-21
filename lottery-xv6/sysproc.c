@@ -133,8 +133,8 @@ int sys_renice(void)
 {
   int nice = 0;
   int pid = 0;
-  nice = argint(0, &nice);
-  pid = argint(1, &pid);
+  argint(0, &nice);
+  argint(1, &pid);
 
   return proc_renice(nice, pid);
 

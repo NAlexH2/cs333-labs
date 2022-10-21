@@ -198,6 +198,7 @@ UPROGS=\
 	_mfork\
 	_random\
 	_renice\
+	_nice\
 	$(NULL)
 #LOTTERY - you'll add some new programs into here
 #  mult, mfork, nice, renice, random
