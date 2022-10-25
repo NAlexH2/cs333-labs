@@ -84,6 +84,7 @@ DEFINES += -DCPS
 DEFINES += -DBETTER_LS
 DEFINES += -DHALT
 DEFINES += -DKDEBUG
+DEFINES += -DVA2PA
 CFLAGS = $(DEFINES) -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer -Wno-stringop-overflow
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 ASFLAGS = $(DEFINES) -m32 -gdwarf-2 -Wa,-divide
@@ -194,6 +195,7 @@ UPROGS=\
 	_ps\
 	_halt\
 	_kdebug\
+	_test_va_pa\
 	$(NULL)
 
 fs.img: mkfs README $(UPROGS)

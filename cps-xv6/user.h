@@ -127,4 +127,8 @@ int halt(void);
 int kdebug(int);
 #endif // KDEBUG
 
+#ifdef VA2PA
+int va2pa(int);
+#endif // VA2PA
+
 #endif //__USER_H

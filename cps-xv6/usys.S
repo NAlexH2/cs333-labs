@@ -46,3 +46,7 @@ SYSCALL(halt)
 #ifdef KDEBUG
 SYSCALL(kdebug)
 #endif // KDEBUG
+
+#ifdef VA2PA
+SYSCALL(va2pa)
+#endif // VA2PA
