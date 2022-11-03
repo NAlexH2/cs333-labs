@@ -15,3 +15,9 @@ kernelmemfs
 mkfs
 .gdbinit
 .vscode
+vikalloc_test.bash
+*complete
+*.out
+*.err
+.vscode
+.idea
