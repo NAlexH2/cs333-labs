@@ -25,7 +25,7 @@ $(PROG1).o: $(PROG1).c $(PROG1).h Makefile
 	$(CC) $(CFLAGS) -c $<
 
 clean cls:
-	rm -f $(PROGS) *.o *~ \#* *.out *.err
+	rm -f $(PROGS) *.o *~ \#* *.out *.err *.log *.txt.gz
 
 #primtesMT:
 
