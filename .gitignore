@@ -21,3 +21,4 @@ vikalloc_test.bash
 *.err
 .vscode
 .idea
+testPrimes.bash
