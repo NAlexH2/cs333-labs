@@ -11,3 +11,8 @@
 # include <string.h>
 # include <getopt.h>
 # include <pthread.h>
+
+typedef struct BitBlock_s {
+    uint32_t bits;
+    pthread_mutex_t mutex;
+} BitBlock_t;
