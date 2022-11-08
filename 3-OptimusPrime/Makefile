@@ -9,7 +9,7 @@ DEFINES =
 CFLAGS = $(DEBUG) -Wall -Wshadow -Wunreachable-code -Wredundant-decls \
 		-Wmissing-declarations -Wold-style-definition -Wmissing-prototypes \
 		-Wdeclaration-after-statement -Wno-return-local-addr -Wuninitialized \
-		$(DEFINES)
+		-pthread $(DEFINES)
 
 PROG1 = primesMT
 
