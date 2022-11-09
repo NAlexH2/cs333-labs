@@ -4,29 +4,28 @@
 CC = gcc
 DEBUG = -g
 DEFINES = 
-DFLAGS = -lm
+LDFLAGS = -lm
 CFLAGS = $(DEBUG) -Wall -Wshadow -Wunreachable-code -Wredundant-decls \
 		-Wmissing-declarations -Wold-style-definition -Wmissing-prototypes \
 		-Wdeclaration-after-statement -Wno-return-local-addr -Wuninitialized \
 		-pthread $(DEFINES)
 
-PROG1 = $(PROG2).o
+PROG = primesMT
 
-PROG2 = primesMT
+all: $(PROG)
 
-PROGS = $(PROG1) $(PROG2)
+$(PROG): $(PROG).o
+	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $(PROG) $@
+	chmod og-rx $(PROG) rm *.o
 
-all: $(PROGS)
+# $(PROG).o: $(PROG).c $(PROG).h 
+# 	$(CC) $(CFLAGS) -c
 
-$(PROG1): $(PROG1) $(CC) 
-	$(CFLAGS) -o -lm $@ $^ 
-	chmode a+rx,g-w $@
-
-$(PROG1): $(PROG2).c $(PROG2).h Makefile
-	$(CC) $(CFLAGS) -c $<
+primesMT.o: primesMT.c $(PROG).h
+	$(CC) $(CFLAGS) -c primesMT.c
 
 clean cls:
-	rm -f $(PROGS) *.o *~ \#* *.out *.err *.log *.txt.gz
+	rm -f $(PROG) *.o *~ \#* *.out *.err *.log *.txt.gz
 
 #primtesMT:
 
