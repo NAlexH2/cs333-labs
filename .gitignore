@@ -22,3 +22,4 @@ vikalloc_test.bash
 .vscode
 .idea
 testPrimes.bash
+primesMT
