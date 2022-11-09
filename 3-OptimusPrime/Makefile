@@ -8,7 +8,7 @@ LDFLAGS = -lm
 CFLAGS = $(DEBUG) -Wall -Wshadow -Wunreachable-code -Wredundant-decls \
 		-Wmissing-declarations -Wold-style-definition -Wmissing-prototypes \
 		-Wdeclaration-after-statement -Wno-return-local-addr -Wuninitialized \
-		-pthread $(DEFINES)
+		-pthread -Werror -Wunsafe-loop-optimizations $(DEFINES)
 
 PROG = primesMT
 

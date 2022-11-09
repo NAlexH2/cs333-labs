@@ -10,13 +10,12 @@ BitBlock_t *BitArray = NULL;
 
 // Prototypes
 void helpMe(void);
-void compositor(int);
+void *compositor(void*);
 void printPrimes(void);
 
 
 int main(int argc, char *argv[])
 {
-    FILE *op = NULL;
     pthread_t *threads = NULL;
     long tid = 0;
 
@@ -46,7 +45,6 @@ int main(int argc, char *argv[])
     }
     if(is_verbose)
         perror("\n**Verbose on**\n");
-    // add 2 * # threads when you get there
     max_calc = ceil(sqrt(user_bounds) + 1);
     bit_arr_size = (user_bounds / 32) + 1;
     BitArray = malloc(bit_arr_size * sizeof(BitBlock_t));
@@ -55,10 +53,16 @@ int main(int argc, char *argv[])
         pthread_mutex_init(&BitArray[i].mutex, NULL);
         BitArray[i].bits = ~0;
     }
-    for(int i = 3; i < max_calc; i += 2){
-        compositor(i);
+    // for(int i = 3; i < max_calc; i += 2){
+    //     compositor(i);
+    // }
+    for(long i = 0, tid = 3; i < user_threads; ++i, tid += 2){
+        pthread_create(&threads[i], NULL, compositor, (void *) tid);
     }
 
+    for (tid = 0; tid < user_threads; ++tid) {
+        pthread_join(threads[tid], NULL);
+    }
 
     printPrimes();
 
@@ -70,6 +74,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "\nBitArray[0].bits = %u\t max_calc = %u\n",
                 BitArray[0].bits, max_calc);
     }
+    // de alloc
     exit(EXIT_SUCCESS);
 }
 
@@ -80,16 +85,32 @@ void helpMe(void)
 }
 
 // all composits are being flipped to 0
-void compositor(int can)
+void *compositor(void * can)
 {
-    for (int i = can + can; i <= user_bounds; i += can) {
-        int bb_index = i / 32;
-        int bb_bit = i % 32;
-        unsigned int mask = 0x1 << bb_bit;
-        mask = ~mask;
-        BitArray[bb_index].bits &= mask;
+    /* 
+    * void * thread_func(void * arg) {
+        long start_paws = (long) arg;
+
+        for(long candy_date = start_paws; i < max_calc; candy_date += (2*user_threads)){
+            for(long j = candy_date + candy_date; j <= user_bounds; j += candy_date)
+        }
     }
-    return;
+    */
+    long sp = (long) can;
+    for (long i = sp; i < max_calc; i += (2 * user_threads))
+    {
+        for (long j = sp + sp; i <= user_bounds; i += sp)
+        {
+            int bb_index = j / 32;
+            int bb_bit = j % 32;
+            uint32_t mask = 0x1 << bb_bit;
+            mask = ~mask;
+            pthread_mutex_lock(&BitArray[bb_index].mutex);
+            BitArray[bb_index].bits &= mask;
+            pthread_mutex_unlock(&BitArray[bb_index].mutex);
+        }
+    }
+    pthread_exit(EXIT_SUCCESS);
 }
 
 void printPrimes(void)
@@ -100,7 +121,7 @@ void printPrimes(void)
         int bb_index = i / 32;
         int bb_bit = i % 32;
         int actual = 0;
-        unsigned int mask = 0x1 << bb_bit;
+        uint32_t mask = 0x1 << bb_bit;
         if(bb_index > 0)
             actual = (bb_index * 32) + bb_bit;
         else
