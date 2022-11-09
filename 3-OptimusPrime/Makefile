@@ -4,24 +4,25 @@
 CC = gcc
 DEBUG = -g
 DEFINES = 
-
-
+DFLAGS = -lm
 CFLAGS = $(DEBUG) -Wall -Wshadow -Wunreachable-code -Wredundant-decls \
 		-Wmissing-declarations -Wold-style-definition -Wmissing-prototypes \
 		-Wdeclaration-after-statement -Wno-return-local-addr -Wuninitialized \
 		-pthread $(DEFINES)
 
-PROG1 = primesMT
+PROG1 = $(PROG2).o
 
-PROGS = $(PROG1)
+PROG2 = primesMT
+
+PROGS = $(PROG1) $(PROG2)
 
 all: $(PROGS)
 
-# $(PROG1): $(PROG1).o $(CC) 
-#	$(CFLAGS) -o $@ $^ 
-#	chmode a+rx,g-w $@
+$(PROG1): $(PROG1) $(CC) 
+	$(CFLAGS) -o -lm $@ $^ 
+	chmode a+rx,g-w $@
 
-$(PROG1).o: $(PROG1).c $(PROG1).h Makefile
+$(PROG1): $(PROG2).c $(PROG2).h Makefile
 	$(CC) $(CFLAGS) -c $<
 
 clean cls:

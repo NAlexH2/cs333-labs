@@ -1,5 +1,6 @@
 // Alex Harris - CS 333 Winter 2022
 
+# include <math.h>
 # include <stdlib.h>
 # include <stdint.h>
 # include <limits.h>
