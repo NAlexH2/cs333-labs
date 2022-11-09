@@ -11,7 +11,7 @@ BitBlock_t *BitArray = NULL;
 // Prototypes
 void helpMe(void);
 void compositor(int);
-void printPrimes();
+void printPrimes(void);
 
 
 int main(int argc, char *argv[])
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     }
     if(is_verbose)
         perror("\n**Verbose on**\n");
-
+    // add 2 * # threads when you get there
     max_calc = ceil(sqrt(user_bounds) + 1);
     bit_arr_size = (user_bounds / 32) + 1;
     BitArray = malloc(bit_arr_size * sizeof(BitBlock_t));
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     }
 
 
-    printPrimes(BitArray);
+    printPrimes();
 
     if(is_verbose) {
         fprintf(stderr, "\nuser_bounds = %u\nuser_threads = %u\nis_verbose = %d\n",
@@ -92,7 +92,7 @@ void compositor(int can)
     return;
 }
 
-void printPrimes()
+void printPrimes(void)
 {
     printf("\n2\n");
     for(int i = 3; i < user_bounds; i += 2)

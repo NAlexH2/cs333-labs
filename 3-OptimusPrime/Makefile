@@ -15,11 +15,7 @@ PROG = primesMT
 all: $(PROG)
 
 $(PROG): $(PROG).o
-	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $(PROG) $@
-	chmod og-rx $(PROG) rm *.o
-
-# $(PROG).o: $(PROG).c $(PROG).h 
-# 	$(CC) $(CFLAGS) -c
+	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $(PROG)
 
 primesMT.o: primesMT.c $(PROG).h
 	$(CC) $(CFLAGS) -c primesMT.c
