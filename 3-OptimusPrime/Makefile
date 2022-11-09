@@ -27,9 +27,5 @@ primesMT.o: primesMT.c $(PROG).h
 clean cls:
 	rm -f $(PROG) *.o *~ \#* *.out *.err *.log *.txt.gz
 
-#primtesMT:
-
-#primtesMT.o:
-
 tar: clean
 	tar cvfz ${LOGNAME}-$(PROG1).tar.gz *.[ch] ?akefile
