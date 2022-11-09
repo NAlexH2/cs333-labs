@@ -17,7 +17,6 @@ void printPrimes(void);
 int main(int argc, char *argv[])
 {
     pthread_t *threads = NULL;
-    long tid = 0;
 
     {
         int opt = -1;
@@ -60,7 +59,7 @@ int main(int argc, char *argv[])
         pthread_create(&threads[i], NULL, compositor, (void *) tid);
     }
 
-    for (tid = 0; tid < user_threads; ++tid) {
+    for (long tid = 0; tid < user_threads; ++tid) {
         pthread_join(threads[tid], NULL);
     }
 
@@ -75,6 +74,8 @@ int main(int argc, char *argv[])
                 BitArray[0].bits, max_calc);
     }
     // de alloc
+    free(threads);
+    free(BitArray);
     exit(EXIT_SUCCESS);
 }
 
