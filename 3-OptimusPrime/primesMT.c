@@ -9,7 +9,6 @@ static unsigned int max_calc = 0;
 BitBlock_t *BitArray = NULL;
 
 // Prototypes
-void helpMe(void);
 void *compositor(void*);
 void printPrimes(void);
 
@@ -34,7 +33,11 @@ int main(int argc, char *argv[])
                 is_verbose = 1;
                 break;
             case 'h':
-                helpMe();
+                printf("\n\t\tHelp:\n-h\tDisplay this information\n"
+                "-t#\tnumber of threads to use (default: 1)\n"
+                "-u#\tThe highest value to calculate primes to (default: 10240)\n"
+                "-v\tVerbose mode."
+                " Display additional information as program runs\n\n");
                 exit(EXIT_SUCCESS);
                 break;
             default:
@@ -78,24 +81,9 @@ int main(int argc, char *argv[])
     exit(EXIT_SUCCESS);
 }
 
-void helpMe(void)
-{
-    fprintf(stderr, "\n\n\nONLY HELP WAS CALLED\n\n\n");
-    return;
-}
-
 // all composits are being flipped to 0
 void *compositor(void * can)
 {
-    /* 
-    * void * thread_func(void * arg) {
-        long start_paws = (long) arg;
-
-        for(long candy_date = start_paws; i < max_calc; candy_date += (2*user_threads)){
-            for(long j = candy_date + candy_date; j <= user_bounds; j += candy_date)
-        }
-    }
-    */
     long sp = (long) can;
     for (long i = sp; i <= max_calc; i += (2 * user_threads))
     {
