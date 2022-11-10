@@ -24,4 +24,4 @@ clean cls:
 	rm -f $(PROG) *.o *~ \#* *.out *.err *.log *.txt.gz
 
 tar: clean
-	tar cvfz ${LOGNAME}-$(PROG1).tar.gz *.[ch] ?akefile
+	tar cvfz ${LOGNAME}-$(PROG).tar.gz *.[ch] ?akefile
