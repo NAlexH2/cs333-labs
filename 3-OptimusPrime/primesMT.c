@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "\nBitArray[0].bits = %u\t max_calc = %u\n\n",
                 BitArray[0].bits, max_calc);
     }
-    // de alloc
+
     free(threads);
     free(BitArray);
     exit(EXIT_SUCCESS);
