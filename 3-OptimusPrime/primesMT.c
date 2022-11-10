@@ -43,20 +43,19 @@ int main(int argc, char *argv[])
         }
     }
     if(is_verbose)
-        perror("\n**Verbose on**\n");
+        fprintf(stderr, "\n**Verbose on**\n");
     max_calc = ceil(sqrt(user_bounds) + 1);
     bit_arr_size = (user_bounds / 32) + 1;
     BitArray = malloc(bit_arr_size * sizeof(BitBlock_t));
     threads = malloc(user_threads * sizeof(pthread_t));
+
     for(int i = 0; i < bit_arr_size; ++i){
         pthread_mutex_init(&BitArray[i].mutex, NULL);
         BitArray[i].bits = ~0;
     }
-    // for(int i = 3; i < max_calc; i += 2){
-    //     compositor(i);
-    // }
-    for(long i = 0, tid = 3; i < user_threads; ++i, tid += 2){
-        pthread_create(&threads[i], NULL, compositor, (void *) tid);
+
+    for(long i = 0, can = 3; i < user_threads; ++i, can += 2){
+        pthread_create(&threads[i], NULL, compositor, (void *) can);
     }
 
     for (long tid = 0; tid < user_threads; ++tid) {
@@ -70,7 +69,7 @@ int main(int argc, char *argv[])
                 user_bounds, user_threads, is_verbose);
         fprintf(stderr, "\nBitArray slots = %d\t BitArray[0] Size = %lu\n",
                 bit_arr_size, sizeof(*BitArray));
-        fprintf(stderr, "\nBitArray[0].bits = %u\t max_calc = %u\n",
+        fprintf(stderr, "\nBitArray[0].bits = %u\t max_calc = %u\n\n",
                 BitArray[0].bits, max_calc);
     }
     // de alloc
@@ -81,7 +80,7 @@ int main(int argc, char *argv[])
 
 void helpMe(void)
 {
-    printf("\n\n\nONLY HELP WAS CALLED\n\n\n");
+    fprintf(stderr, "\n\n\nONLY HELP WAS CALLED\n\n\n");
     return;
 }
 
@@ -98,17 +97,24 @@ void *compositor(void * can)
     }
     */
     long sp = (long) can;
-    for (long i = sp; i < max_calc; i += (2 * user_threads))
+    for (long i = sp; i <= max_calc; i += (2 * user_threads))
     {
-        for (long j = sp + sp; i <= user_bounds; i += sp)
+        if (is_verbose) {
+            fprintf(stderr, "\n\nmax_calc: %d\tsp: %li\ti: %ld", max_calc, sp, i);
+        }
+        for (long j = i + i; j <= user_bounds; j += i)
         {
-            int bb_index = j / 32;
-            int bb_bit = j % 32;
+            uint32_t bb_index = j / 32;
+            uint32_t bb_bit = j % 32;
             uint32_t mask = 0x1 << bb_bit;
             mask = ~mask;
             pthread_mutex_lock(&BitArray[bb_index].mutex);
             BitArray[bb_index].bits &= mask;
             pthread_mutex_unlock(&BitArray[bb_index].mutex);
+            if(is_verbose) {
+                fprintf(stderr, "\n\tbb_index: %u\tbb_bit: %u\tthread pos: %lu\tj: %ld", 
+                bb_index, bb_bit, i, j);
+            }
         }
     }
     pthread_exit(EXIT_SUCCESS);
@@ -116,7 +122,7 @@ void *compositor(void * can)
 
 void printPrimes(void)
 {
-    printf("\n2\n");
+    printf("2\n");
     for(int i = 3; i < user_bounds; i += 2)
     {
         int bb_index = i / 32;
