@@ -62,7 +62,7 @@ main(int argc, char *argv[])
 
                     if (-1 == stat(argv[i], &lsb)) {
                         fprintf(stdout, "Symbolic link - "
-                                "with dangling destination\n")
+                                "with dangling destination\n");
                     }
                     else {
                         memset(buf, 0, PATH_MAX);
@@ -100,6 +100,15 @@ main(int argc, char *argv[])
                 , gName->gr_name, sb.st_gid);
         }
         fprintf(stdout, "   File size:          %zd bytes\n", sb.st_size);
+
+        fprintf(stdout, "   Last file access: %10ld (seconds since epoc)\n"
+            , sb.st_atime);
+
+        fprintf(stdout, "   Last file access: %s (local)\n"
+            , show_local_time(&sb.st_atime));
+
+        fprintf(stdout, "   Last file access: %s (UDT)\n"
+            , show_utc_time(&sb.st_atime));
     }
 
     return EXIT_SUCCESS;
