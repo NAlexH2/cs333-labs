@@ -57,7 +57,7 @@ tar:
 	tar cvzf $(TAR_FILE) *.[ch] [Mm]akefile
 
 zip:
-	zip cs201-${LOGNAME}.zip *.[ch] ?akefile
+	zip cs333-${LOGNAME}.zip *.[ch] ?akefile
 
 funny: $(PROG3)
 	rm -rf FUNNY*
